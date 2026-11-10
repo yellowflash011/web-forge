@@ -50,3 +50,8 @@ An attempted secret-key metadata retrieval was rejected by automatic approval re
 Provider credentials previously pasted into chat should be rotated for production. This does not affect importing the public Vercel environment file.
 
 Reference: [Supabase function authorization headers](https://supabase.com/docs/guides/functions/auth-headers).
+
+## Direct signup (2026-11-10)
+
+Email confirmation is disabled at the user's request. New email/password signups receive an authenticated session immediately; no confirmation email is sent. Anonymous access remains disabled. Password recovery still uses email and its sending limits still apply. Live signup verified session issuance and auto-confirmation; the temporary test user was deleted. Existing pending accounts are not bulk-modified.
+
