@@ -6,6 +6,7 @@ test('Facade: all 20 required API_CONTRACT functions are defined and async', () 
   const expectedCalls = [
     'ensureSession',
     'getSession',
+    'getMyWorkerProfile',
     'signOut',
     'saveWorkerProfile',
     'getWorker',
@@ -72,4 +73,28 @@ test('Facade: end-to-end session, worker discovery, and job creation via lib/api
   assert.equal(getJobRes.error, null);
   assert.equal(getJobRes.data.job.id, job.id);
   assert.ok(getJobRes.data.allowedActions.includes('cancel'));
+});
+
+test('Facade: getMyWorkerProfile returns null for pure customer and Worker for worker account', async () => {
+  // Pure customer
+  const custSession = await api.ensureSession();
+  const custWorkerProfile = await api.getMyWorkerProfile();
+  assert.equal(custWorkerProfile.error, null);
+  assert.equal(custWorkerProfile.data, null);
+
+  // Save profile for this user
+  const saved = await api.saveWorkerProfile({
+    fields: {
+      name: 'Test Pro Worker',
+      tradeIds: ['electrician'],
+      localityId: 'g-10-islamabad',
+    },
+  });
+  assert.equal(saved.error, null);
+
+  // Now getMyWorkerProfile returns the worker profile
+  const found = await api.getMyWorkerProfile();
+  assert.equal(found.error, null);
+  assert.ok(found.data);
+  assert.equal(found.data.name, 'Test Pro Worker');
 });

@@ -4,6 +4,7 @@ Latest pushed SHA: e1c217fd2f8e1f213b2db029bfdac51f873ab371
 Ready calls/screens:
 - ensureSession (API_CONTRACT v1 Session shape)
 - getSession (returns Session or null)
+- getMyWorkerProfile (returns Worker or null; requested by Machine A)
 - signOut (returns { signedOut: true })
 - saveWorkerProfile (Worker shape, controlled trades/localities)
 - getWorker (Worker + Review[] shape)
