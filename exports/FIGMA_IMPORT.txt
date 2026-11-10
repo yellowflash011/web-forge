@@ -1,0 +1,23 @@
+ROSHAN ROZGAR — FIGMA DESIGN HANDOFF
+
+Standalone file: roshan-rozgar-design.html
+Contains five responsive screen compositions, embedded CSS and photos.
+Google Fonts requires internet. No connected backend or live bookings.
+
+If your HTML-to-Figma plugin accepts files, import this HTML directly.
+For browser capture, start the project with npm run dev and open:
+  http://localhost:3000/figma-design.html
+Interactive prototype:
+  http://localhost:3000/
+Interactive collection:
+  http://localhost:3000/design/
+
+Capture at 1440px for desktop and 390px for mobile.
+Cloud-only importers cannot reach localhost. Use browser capture, file import,
+or host the exported out directory on a static host.
+Inspect fonts, SVG icons, grouping and Auto Layout after import.
+Conversion into Figma layers has not been verified.
+
+Rebuild after source edits:
+  npm run build
+  npm run export:figma
