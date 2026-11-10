@@ -1,8 +1,9 @@
 # Machine B status
 
-Tested baseline SHA: 15cc54c (origin/main with Next.js App Router refactoring)
+Tested baseline SHA: 482a33d (integration of Machine A commit 4904f70 and Machine B commit 6876860)
 Shared Supabase project reference: roshan-rozgar (supabase/config.toml)
 Batch: B6 registered-user authentication, Groq/Gemini voice processing & hosted verification
+Latest pushed SHA: 482a33d
 
 ## Registered-User Authentication & Anonymous Removal
 - Replaced automatic `signInAnonymously` behavior:
@@ -65,7 +66,7 @@ Verified with distinct registered accounts (Worker, Customer A, Customer B, Outs
 12. **Password Recovery & Reset**: Customer B updates password (`updateUser`), old password fails on subsequent login, and new password successfully signs in.
 
 ## Test Suite Results
-1. `npm test` (28 passed, 0 failed):
+1. `npm test` (30 passed, 0 failed):
    - `tests/backend/domain_and_contract.test.js`: 8 passed (sessions, discovery, cross-user denial, stale quotes, booking races, inspection journey, allowed actions, AI fallback).
    - `tests/backend/facade_contract.test.js`: 3 passed (contract exports, normalized failures on missing setup, config validation).
    - `tests/backend/auth_registered.test.js`: 4 passed (registration validation, duplicate email prevention, sign in/out, password reset, anonymous rejection).
@@ -74,7 +75,11 @@ Verified with distinct registered accounts (Worker, Customer A, Customer B, Outs
    - `tests/backend/postgres_integration.test.js`: 1 passed (PGlite executing all 5 migrations, registered auth, discovery RPCs, booking exclusion, private audio storage policy, message cursor).
    - `tests/ui/demo-contract.test.mjs`: 3 passed (worker discovery lifecycle, idempotent request retries, no fabricated confirmation).
    - `tests/ui/job-policy.test.mjs`: 3 passed (paisa parsing, inspection fee credit arithmetic, role/expiry enforcement).
-2. `npm run test:ui` (6 passed, 0 failed):
+   - `tests/ui/auth-policy.test.mjs`: 2 passed (post-login destinations, explicit registered identities gate).
+2. `npm run test:ui` (14 passed, 0 failed):
    - `tests/ui/job-workspace.test.jsx`: 6 component journeys passed (fixed-price completion/review, stale quote consent invalidation, inspection credit/repair approval, issue reporting without completion, lost-response quote retry, cancellation reasons).
+   - `tests/ui/voice-composer.test.jsx`: 3 voice component journeys passed (failed voice send retry, denied microphone handling, leaving recording stops mic).
+   - `tests/ui/auth-page.test.jsx`: 4 auth page journeys passed (login restores identity, confirmation instructions, mismatched password prevention, invalid reset link disabling).
+   - `tests/ui/worker-onboarding.test.jsx`: 1 Urdu voice onboarding journey passed (reached confirmed profile save without typing).
 3. `npm run build`:
-   - Production Next.js build succeeded cleanly with 0 errors across all routes.
+   - Production Next.js build succeeded cleanly with 0 errors across all 16 static and dynamic routes.
