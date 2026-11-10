@@ -1,5 +1,15 @@
 # Machine A status
 
+## Registered accounts, voice and worker language — latest batch
+
+Implemented email/password login, registration, confirmation callback, recovery and reset pages using the shared Supabase browser client. Marketplace routes require an explicit registered identity; guest controls and automatic frontend ensureSession calls are removed. Internal return URLs are validated. Identity changes clear private drafts and remount protected content. Backend RLS/RPC/Storage rejection of anonymous identities and hosted auth deployment remain B-owned.
+
+Job conversations now record, preview, upload and send voice notes. Failed sends retain the uploaded reference for idempotent retries. Customer requests attach audio and offer a confirmed AI task suggestion; an extraction failure retains the audio and manual task fallback. Recorder cleanup and permission errors are handled. Worker onboarding/workspace add Urdu/English selection, RTL, key translated actions, spoken instructions when a device voice exists and quote amount presets. Payment remains outside the platform.
+
+Checks: 25 local contract/domain/database/policy tests and 14 interactive UI tests pass, including confirmation-required signup, invalid reset links, voice retry/permission/unmount behavior and a no-typing Urdu onboarding journey against a controlled adapter. Browser auth checks at 1440px and 390px verified protected route redirects, preserved return destination, registration validation and no phone overflow. Screenshots: tests/ui/evidence/auth-desktop.png and auth-mobile.png. Hosted email delivery, actual accounts, independent sessions, microphone/Storage transfer and real Gemini audio remain B5 checks.
+
+Read AUTH_VOICE_FRONTEND_HANDOFF.md before integrating B's auth/deployment work. Device speech synthesis is not guaranteed to provide Urdu: recorded prompts or a deployed speech service remain a portability follow-up, and some secondary text remains English. No claim of full localization or hosted readiness is made.
+
 ## Next.js App Router refactor — current checkpoint
 
 The root marketplace now has real pages under app/: discovery, dynamic public profiles, dynamic job workspaces, jobs, worker workspace, worker-profile editing, onboarding, account and saved workers. /profile/ redirects to /account/. The screen-switch component and hash navigation are removed, including the reference design's hash writes. Shared appearance and the existing quote/action/review workspace are preserved.

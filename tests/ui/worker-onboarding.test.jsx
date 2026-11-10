@@ -1,0 +1,23 @@
+import React from 'react';
+import test,{afterEach,after} from 'node:test';
+import assert from 'node:assert/strict';
+import {JSDOM} from 'jsdom';
+const dom=new JSDOM('<!doctype html><html><body></body></html>',{url:'http://localhost/'});
+for(const [name,value]of Object.entries({window:dom.window,document:dom.window.document,navigator:dom.window.navigator,HTMLElement:dom.window.HTMLElement,Node:dom.window.Node,MutationObserver:dom.window.MutationObserver,getComputedStyle:dom.window.getComputedStyle}))Object.defineProperty(globalThis,name,{configurable:true,value});
+globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+const {render,within,waitFor,cleanup}=await import('@testing-library/react');
+const userEvent=(await import('@testing-library/user-event')).default;
+const {default:WorkerEditor}=await import('../../features/marketplace/worker-editor.jsx');
+Object.defineProperty(navigator,'mediaDevices',{value:{getUserMedia:async()=>({getTracks:()=>[{stop:()=>{}}]})}});
+window.MediaRecorder=class{state='inactive';mimeType='audio/webm';start(){this.state='recording'}stop(){this.state='inactive';this.ondataavailable({data:new Blob(['spoken introduction'],{type:this.mimeType})});this.onstop()}};
+URL.createObjectURL=()=> 'blob:introduction';URL.revokeObjectURL=()=>{};
+afterEach(()=>cleanup());after(()=>dom.window.close());
+test('Urdu voice onboarding can reach confirmed profile save without typing',async()=>{
+ const writes=[],extractions=[];let saved=null;
+ const services={getSession:async()=>({data:{userId:'registered-worker',isAnonymous:false},error:null}),uploadAudio:async()=>({data:{audioRef:'registered-worker/onboarding/clip.webm'},error:null}),extractVoice:async input=>{extractions.push(input);return {data:{fields:{name:'اسلم',tradeIds:['plumber'],localityId:'g-10-islamabad',serviceAreaIds:['g-10-islamabad'],yearsExperience:10,bio:'پلمبنگ کا کام'},ambiguities:[]},error:null}},saveWorkerProfile:async input=>{writes.push(input);return {data:{id:'worker-id',...input.fields},error:null}}};
+ const view=render(<WorkerEditor services={services} onSaved={worker=>{saved=worker}}/>),screen=within(view.container),user=userEvent.setup({document:dom.window.document});
+ assert.equal(view.container.firstChild.getAttribute('dir'),'rtl');assert.equal(view.container.firstChild.getAttribute('lang'),'ur');
+ await user.click(screen.getByRole('button',{name:'اپنا تعارف ریکارڈ کریں',exact:true}));await user.click(await screen.findByRole('button',{name:'ریکارڈنگ روکیں',exact:true}));await user.click(await screen.findByRole('button',{name:'آواز سے تفصیلات بنائیں',exact:true}));
+ await waitFor(()=>assert.equal(screen.getByRole('textbox',{name:'آپ کا نام',exact:true}).value,'اسلم'));assert.equal(writes.length,0);assert.equal(extractions[0].locale,'ur');
+ await user.click(screen.getByRole('button',{name:'تفصیلات دیکھیں',exact:true}));assert.equal(writes.length,0);await user.click(screen.getByRole('button',{name:'پروفائل محفوظ کریں',exact:true}));await waitFor(()=>assert.ok(saved));assert.equal(writes.length,1);assert.equal(writes[0].fields.yearsExperience,10);
+});
