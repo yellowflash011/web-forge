@@ -1,5 +1,21 @@
 # Machine A status
 
+## Integration repair — current checkpoint
+
+User explicitly authorized Machine A to repair backend gaps. Merged origin/implementation/backend (f94f21a) into implementation/frontend. Prior ownership is temporarily overridden for these integration fixes; Machine B's next task is deployment/live B5, documented in MACHINE_B_NEXT_TASK.md.
+
+Repaired: missing own-worker read; implicit in-memory fallback; Next public-key configuration; locality mismatch; busy-worker discovery; audio-reference-as-text AI; missing private audio provisioning; profile/review counts; FK-invalid demo review seed; message idempotency/cursor; fabricated transcript fallback; unsafe nullable suggestions. Added authenticated Edge handler with actual audio bytes, server-only model/key configuration, caller-scoped storage, throttling and explicit failure responses.
+
+Frontend services now select the real facade by default. Fixtures require NEXT_PUBLIC_APP_MODE=demo explicitly. This is code integration, not a claim of hosted readiness. Cloud migrations/function deployment have NOT been applied here; Machine B alone owns shared-environment changes.
+
+Checks: 20 tests pass, including real LOCAL PostgreSQL migration execution and policy/assignment/message checks via PGlite, plus mock-provider and Edge boundary tests. Final production build passed. Browser bundle scan found zero Gemini key references or direct Gemini provider-request URLs. PGlite uses stand-ins for Supabase Auth/Storage. Hosted auth, independent concurrent transactions, function deployment and actual Urdu transcription remain B5 checks.
+
+Required deployment: repaired migration 00003 on fresh projects, then new 00004; deploy extract-voice with GEMINI_API_KEY and GEMINI_AUDIO_MODEL as function secrets. See docs/backend/INTEGRATION_REPAIR.md and coordination/MACHINE_B_NEXT_TASK.md. Do not replay already-applied migrations or reset shared data.
+
+Next frontend work: quote editor, allowedActions-driven job controls, reviews and audio-message playback against the delivered backend. Earlier fixture-only checkpoint below is retained as history.
+
+## Earlier frontend checkpoint
+
 Baseline SHA: b463a25 (coordination baseline published to main)
 
 Branch: implementation/frontend

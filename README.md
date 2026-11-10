@@ -1,5 +1,13 @@
 # Roshan Rozgar — Next.js design prototype
 
+## Backend integration repair checkpoint
+
+Machine B's backend is merged on `implementation/frontend`. The real service facade is connected at the frontend boundary and defaults to live mode. Use `NEXT_PUBLIC_APP_MODE=demo` explicitly for local fixture work; live setup/network failures never silently select fixtures. The root app supports either Supabase publishable-key or legacy anon-key environment names. See `.env.example` and `docs/backend/INTEGRATION_REPAIR.md`.
+
+Migrations through 00004 and deployment/configuration of the authenticated `extract-voice` Edge Function are required for live use. Provider keys belong only in function secrets. Real hosted acceptance is still B5 work: see `coordination/MACHINE_B_NEXT_TASK.md`. Current local verification does not prove deployment, real Urdu quality or simultaneous hosted booking behavior. Quote/action/review UI integration remains the next frontend batch.
+
+The earlier checkpoint below describes the prior fixture-only state and is retained as history.
+
 ## Current implementation checkpoint — Machine A
 
 The root app now uses a modular frontend with explicit local demo services. The submitted design remains at `/design/` and the existing HTML exports are preserved. See `coordination/status-A.md` for connected calls, verification and the B1 integration requirement.

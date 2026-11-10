@@ -117,6 +117,14 @@ begin
     (v_nadeem_worker_id, 'g-10-islamabad')
   on conflict (worker_id, locality_id) do nothing;
 
+  -- Historical demo jobs must exist before their FK-linked reviews.
+  insert into public.jobs(id,customer_id,worker_id,trade_id,locality_id,task,pricing_path,state,is_demo)
+  values
+   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1',v_cust1_user_id,v_rashid_worker_id,'electrician','g-10-islamabad','Demo: short circuit repair','fixed','completed',true),
+   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2',v_cust2_user_id,v_rashid_worker_id,'electrician','g-10-islamabad','Demo: breaker replacement','fixed','completed',true),
+   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3',v_cust1_user_id,v_tariq_worker_id,'plumber','g-9-islamabad','Demo: kitchen pipe repair','fixed','completed',true)
+  on conflict(id) do nothing;
+
   -- Reviews for Rashid
   insert into public.reviews (
     id,

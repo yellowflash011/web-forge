@@ -1,0 +1,4 @@
+project_id = "roshan-rozgar"
+
+[functions.extract-voice]
+verify_jwt = true
