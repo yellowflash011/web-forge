@@ -1,5 +1,13 @@
 # Roshan Rozgar — Next.js design prototype
 
+## Completed quote, job-action and review frontend
+
+The job workspace now includes the worker quote editor, exact-quote customer consent, role-specific transitions, completion, cancellation/issue reporting and completed-job reviews. These use the real API facade in live mode; the backend remains authoritative. Local demo mode still explicitly fails undelivered operations instead of fabricating a successful booking or review.
+
+`npm test` runs 23 local checks. `npm run test:ui` runs 6 interactive component journeys using jsdom and a role-scoped in-memory test adapter, including fixed-price and inspection flows, stale consent, duplicate-intent retry and reviews. These checks were run on Node 24 and do not establish hosted readiness. The tests also generate ignored HTML fixtures for visual inspection; the optional `node tests/ui/evidence-server.mjs` serves only those fixtures on localhost:3010 and is not part of the application deployment.
+
+Machine B's hosted B5 verification remains independent. The submitted `/design/` reference and Figma export assets remain preserved. See coordination/status-A.md for the latest handoff, pricing semantics and remaining acceptance checks. Older checkpoint notes below are historical.
+
 ## Backend integration repair checkpoint
 
 Machine B's backend is merged on `implementation/frontend`. The real service facade is connected at the frontend boundary and defaults to live mode. Use `NEXT_PUBLIC_APP_MODE=demo` explicitly for local fixture work; live setup/network failures never silently select fixtures. The root app supports either Supabase publishable-key or legacy anon-key environment names. See `.env.example` and `docs/backend/INTEGRATION_REPAIR.md`.
