@@ -1,0 +1,10 @@
+'use client';
+import React,{useState,useEffect} from 'react';
+import {Volume2,Square} from 'lucide-react';
+export function useWorkerLanguage(defaultLanguage='ur'){const [language,setLanguage]=useState(defaultLanguage);useEffect(()=>{try{const saved=localStorage.getItem('rr-language');if(['ur','en'].includes(saved))setLanguage(saved);else localStorage.setItem('rr-language',defaultLanguage)}catch{}},[]);const change=value=>{setLanguage(value);try{localStorage.setItem('rr-language',value)}catch{}};return {language,setLanguage:change,urdu:language==='ur',t:(en,ur)=>language==='ur'?ur:en}}
+export default function LanguageTools({language,onChange,instruction}){
+ const [error,setError]=useState(''),[speaking,setSpeaking]=useState(false);
+ useEffect(()=>()=>{if(window.speechSynthesis)window.speechSynthesis.cancel()},[]);
+ const speak=()=>{setError('');if(!window.speechSynthesis){setError('Spoken instructions are unavailable in this browser.');return}if(speaking){speechSynthesis.cancel();setSpeaking(false);return}const voices=speechSynthesis.getVoices(),voice=voices.find(v=>v.lang.toLowerCase().startsWith(language));if(!voice&&language==='ur'){setError('اس آلے پر اردو آواز دستیاب نہیں۔ ہدایات پڑھیں یا English منتخب کریں۔');return}const utterance=new SpeechSynthesisUtterance(instruction);if(voice)utterance.voice=voice;utterance.lang=language==='ur'?'ur-PK':'en-GB';utterance.onend=()=>setSpeaking(false);utterance.onerror=()=>{setSpeaking(false);setError('Audio instructions could not play. Please retry.')};speechSynthesis.cancel();speechSynthesis.speak(utterance);setSpeaking(true)};
+ return <><div className="language-tools"><button type="button" aria-pressed={language==='ur'} onClick={()=>{window.speechSynthesis?.cancel();setSpeaking(false);onChange('ur')}}>اردو</button><button type="button" aria-pressed={language==='en'} onClick={()=>{window.speechSynthesis?.cancel();setSpeaking(false);onChange('en')}}>English</button><button type="button" onClick={speak}>{speaking?<Square size={15}/>:<Volume2 size={15}/>} {language==='ur'?'ہدایات سنیں':'Listen to instructions'}</button></div>{error&&<p role="status" className="demo-note">{error}</p>}</>;
+}
