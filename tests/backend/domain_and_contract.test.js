@@ -45,7 +45,7 @@ test('2. Worker Profile & Discovery: save profile and filter by trade/locality',
       name: 'Ahmed Plumber',
       tradeIds: ['plumber'],
       localityId: 'g-10-islamabad',
-      serviceAreaIds: ['g-10-islamabad', 'f-10-islamabad'],
+      serviceAreaIds: ['g-10-islamabad', 'g-9-islamabad'],
       yearsExperience: 4,
       bio: 'Fast and reliable plumbing services in G-10.',
     },
@@ -61,7 +61,7 @@ test('2. Worker Profile & Discovery: save profile and filter by trade/locality',
   const plumbers = store.listWorkers({ tradeId: 'plumber', localityId: 'g-10-islamabad' });
   assert.equal(plumbers.error, null);
   assert.ok(plumbers.data.items.length >= 1);
-  assert.ok(plumbers.data.items.some((w) => w.name === 'Ahmed Plumber'));
+  assert.equal(plumbers.data.items.some((w) => w.name === 'Ahmed Plumber'),false,'New profiles stay hidden until explicitly available');
 
   // Filter electricians only: Ahmed should NOT appear
   const electricians = store.listWorkers({ tradeId: 'electrician', localityId: 'g-10-islamabad' });
@@ -73,6 +73,7 @@ test('2. Worker Profile & Discovery: save profile and filter by trade/locality',
   assert.equal(availRes.data.availabilityOptIn, true);
   assert.ok(availRes.data.availabilityExpiresAt);
   assert.equal(availRes.data.isAvailableNow, true);
+  assert.ok(store.listWorkers({tradeId:'plumber',localityId:'g-10-islamabad'}).data.items.some(w=>w.name==='Ahmed Plumber'));
 });
 
 test('3. Cross-User Denial: unrelated users cannot view or send messages on a job', async () => {
@@ -254,7 +255,7 @@ test('6. Inspection Journey: visit agreement -> repair quote -> decline vs appro
   const req = store.createRequest({
     workerId: tariqWorkerId,
     tradeId: 'plumber',
-    localityId: 'f-10-islamabad',
+    localityId: 'g-9-islamabad',
     task: 'Underfloor water leakage with damp walls',
     pricingPath: 'inspection',
   });

@@ -1,0 +1,26 @@
+import * as live from '../../lib/api/index.js';
+import * as demo from '../../lib/demo/index.js';
+// Explicit deployment choice. Missing/broken live configuration never selects fixtures.
+export const mode=process.env.NEXT_PUBLIC_APP_MODE==='demo'?'demo':'live';
+const adapter=mode==='demo'?demo:live;
+export const getSession=(...args)=>adapter.getSession(...args);
+export const ensureSession=(...args)=>adapter.ensureSession(...args);
+export const signOut=(...args)=>adapter.signOut(...args);
+export const getMyWorkerProfile=(...args)=>adapter.getMyWorkerProfile(...args);
+export const saveWorkerProfile=(...args)=>adapter.saveWorkerProfile(...args);
+export const getWorker=(...args)=>adapter.getWorker(...args);
+export const listWorkers=(...args)=>adapter.listWorkers(...args);
+export const setAvailability=(...args)=>adapter.setAvailability(...args);
+export const createRequest=(...args)=>adapter.createRequest(...args);
+export const listMyJobs=(...args)=>adapter.listMyJobs(...args);
+export const getJob=(...args)=>adapter.getJob(...args);
+export const listMessages=(...args)=>adapter.listMessages(...args);
+export const sendMessage=(...args)=>adapter.sendMessage(...args);
+export const issueQuote=(...args)=>adapter.issueQuote(...args);
+export const acceptQuote=(...args)=>adapter.acceptQuote(...args);
+export const transitionJob=(...args)=>adapter.transitionJob(...args);
+export const submitReview=(...args)=>adapter.submitReview(...args);
+export const reportIssue=(...args)=>adapter.reportIssue(...args);
+export const uploadAudio=(...args)=>adapter.uploadAudio(...args);
+export const getAudioPlaybackUrl=(...args)=>adapter.getAudioPlaybackUrl(...args);
+export const extractVoice=(...args)=>adapter.extractVoice(...args);

@@ -1,5 +1,23 @@
 # Roshan Rozgar — Next.js design prototype
 
+## Backend integration repair checkpoint
+
+Machine B's backend is merged on `implementation/frontend`. The real service facade is connected at the frontend boundary and defaults to live mode. Use `NEXT_PUBLIC_APP_MODE=demo` explicitly for local fixture work; live setup/network failures never silently select fixtures. The root app supports either Supabase publishable-key or legacy anon-key environment names. See `.env.example` and `docs/backend/INTEGRATION_REPAIR.md`.
+
+Migrations through 00004 and deployment/configuration of the authenticated `extract-voice` Edge Function are required for live use. Provider keys belong only in function secrets. Real hosted acceptance is still B5 work: see `coordination/MACHINE_B_NEXT_TASK.md`. Current local verification does not prove deployment, real Urdu quality or simultaneous hosted booking behavior. Quote/action/review UI integration remains the next frontend batch.
+
+The earlier checkpoint below describes the prior fixture-only state and is retained as history.
+
+## Current implementation checkpoint — Machine A
+
+The root app now uses a modular frontend with explicit local demo services. The submitted design remains at `/design/` and the existing HTML exports are preserved. See `coordination/status-A.md` for connected calls, verification and the B1 integration requirement.
+
+Working locally: guest session/signout, confirmed worker-profile creation/editing, service areas, availability with expiry, filtered discovery, public profiles, saved IDs, request creation and text conversations. Local demo records persist across refresh in this browser only. Booking confirmation, worker/customer cross-device messages, quote operations, real authentication, AI and database authorization await Machine B. Demo operations must not be presented as real services.
+
+Frontend service seam: `features/marketplace/services.js`. Backend ownership remains `lib/api/`, `lib/supabase/` and `supabase/`; these directories were not created or edited by Machine A. Build and development caches are separated to avoid breaking the running preview during production builds.
+
+Run the focused fixture-contract checks with `node --test tests/ui/demo-contract.test.mjs`. They test local UI development fixtures, not real Supabase permissions or concurrency.
+
 A responsive frontend design for a voice-first neighbourhood trade marketplace. Built with Next.js App Router, React and Lucide icons. No Supabase or AI service is connected yet.
 
 ## Open locally

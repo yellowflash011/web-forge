@@ -33,6 +33,7 @@ Review: `{ id, jobId, workerId, authorId, rating, punctuality, priceHonoured, te
 |---|---|---|
 | ensureSession | none; reuse existing or create configured anonymous auth session | Session |
 | getSession | none | Session or null |
+| getMyWorkerProfile | none; authenticated caller only | Worker or null if no worker profile |
 | signOut | none | `{ signedOut: true }` |
 | saveWorkerProfile | `{ fields: { name, tradeIds, localityId, serviceAreaIds, yearsExperience, bio }, idempotencyKey }` | Worker |
 | getWorker | `{ workerId }` | `{ worker, reviews: Review[] }` |
