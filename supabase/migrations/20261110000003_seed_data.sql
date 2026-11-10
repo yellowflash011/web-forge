@@ -15,13 +15,13 @@ declare
 begin
   -- Insert demo auth users if auth schema exists and users don't exist
   if exists (select 1 from information_schema.tables where table_schema = 'auth' and table_name = 'users') then
-    insert into auth.users (id, email, raw_user_meta_data, created_at)
+    insert into auth.users (id, email, raw_user_meta_data, created_at, email_confirmed_at)
     values
-      (v_rashid_user_id, 'demo.rashid@roshanrozgar.pk', '{"display_name": "Mohammad Rashid"}'::jsonb, now()),
-      (v_tariq_user_id, 'demo.tariq@roshanrozgar.pk', '{"display_name": "Tariq Mehmood"}'::jsonb, now()),
-      (v_nadeem_user_id, 'demo.nadeem@roshanrozgar.pk', '{"display_name": "Nadeem Akhtar"}'::jsonb, now()),
-      (v_cust1_user_id, 'demo.customer1@roshanrozgar.pk', '{"display_name": "Usman Khan"}'::jsonb, now()),
-      (v_cust2_user_id, 'demo.customer2@roshanrozgar.pk', '{"display_name": "Fatima Bibi"}'::jsonb, now())
+      (v_rashid_user_id, 'demo.rashid@roshanrozgar.pk', '{"display_name": "Mohammad Rashid"}'::jsonb, now(), now()),
+      (v_tariq_user_id, 'demo.tariq@roshanrozgar.pk', '{"display_name": "Tariq Mehmood"}'::jsonb, now(), now()),
+      (v_nadeem_user_id, 'demo.nadeem@roshanrozgar.pk', '{"display_name": "Nadeem Akhtar"}'::jsonb, now(), now()),
+      (v_cust1_user_id, 'demo.customer1@roshanrozgar.pk', '{"display_name": "Usman Khan"}'::jsonb, now(), now()),
+      (v_cust2_user_id, 'demo.customer2@roshanrozgar.pk', '{"display_name": "Fatima Bibi"}'::jsonb, now(), now())
     on conflict (id) do nothing;
   end if;
 

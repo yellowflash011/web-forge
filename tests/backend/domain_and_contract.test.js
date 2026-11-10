@@ -14,7 +14,12 @@ import { extractVoice } from '../../lib/api/voice.js';
 test('1. Session & Auth: distinct sessions and profile flags', async () => {
   const store = new InMemoryStore();
 
-  // Create customer session
+  // ensureSession requires existing registered session when unauthenticated
+  assert.equal(store.ensureSession().error?.code, ERROR_CODES.UNAUTHENTICATED);
+
+  // Register customer session
+  const reg = store.register({ email: 'customer_new@roshanrozgar.pk', password: 'password123', displayName: 'Usman Khan' });
+  assert.equal(reg.error, null);
   const custSession = store.ensureSession();
   assert.equal(custSession.error, null);
   assert.ok(custSession.data.userId);

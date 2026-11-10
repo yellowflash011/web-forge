@@ -7,7 +7,7 @@
     "dev": "next dev --hostname 0.0.0.0 --webpack",
     "build": "next build --webpack",
     "export:figma": "node scripts/export-figma.mjs",
-    "test": "node --test tests/backend/domain_and_contract.test.js tests/backend/facade_contract.test.js tests/backend/voice_integration.test.js tests/backend/postgres_integration.test.js tests/ui/demo-contract.test.mjs tests/ui/job-policy.test.mjs",
+    "test": "node --test tests/backend/domain_and_contract.test.js tests/backend/facade_contract.test.js tests/backend/auth_registered.test.js tests/backend/hosted_acceptance.test.js tests/backend/voice_integration.test.js tests/backend/postgres_integration.test.js tests/ui/demo-contract.test.mjs tests/ui/job-policy.test.mjs",
     "test:live-voice": "node tests/backend/smoke_urdu.js",
     "test:ui": "tsx --tsconfig tests/ui/tsconfig.json --test tests/ui/job-workspace.test.jsx",
     "start": "next start --hostname 0.0.0.0"

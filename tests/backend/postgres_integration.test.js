@@ -10,25 +10,27 @@ test('SQL migrations, safe discovery, booking exclusion, messages and private au
  const db=new PGlite();
  try{
   await db.exec(`
-   create role anon; create role authenticated;
+   create role anon; create role authenticated; create role service_role;
    create schema auth;create schema storage;
-   create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb,created_at timestamptz);
+   create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb,created_at timestamptz,email_confirmed_at timestamptz default now(),is_anonymous boolean default false,deleted_at timestamptz,banned_until timestamptz);
    create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+   create function auth.jwt() returns jsonb language sql stable as $$ select json_build_object('sub', current_setting('request.jwt.claim.sub',true), 'is_anonymous', coalesce(nullif(current_setting('request.jwt.claim.is_anonymous',true),'')::boolean, false))::jsonb $$;
    create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
    create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text,unique(bucket_id,name));
    alter table storage.objects enable row level security;
    grant usage on schema public,auth,storage to anon,authenticated;
    grant execute on function auth.uid() to anon,authenticated;
+   grant execute on function auth.jwt() to anon,authenticated;
    grant all on storage.objects to authenticated;
    alter default privileges in schema public grant all on tables to anon,authenticated;
   `);
-  for(const file of ['20261110000001_initial_schema.sql','20261110000002_domain_rpcs.sql','20261110000003_seed_data.sql','20261110000004_integration_hardening.sql']){
+  for(const file of ['20261110000001_initial_schema.sql','20261110000002_domain_rpcs.sql','20261110000003_seed_data.sql','20261110000004_integration_hardening.sql','20261110000005_registered_accounts.sql']){
    let sql=await readFile(new URL(`../../supabase/migrations/${file}`,import.meta.url),'utf8');
    // PGlite already provides gen_random_uuid; its optional pgcrypto extension is absent.
    sql=sql.replace('create extension if not exists "pgcrypto";','');await db.exec(sql);
   }
   const customer='00000000-0000-0000-0000-000000000011',workerOwner='00000000-0000-0000-0000-000000000001',stranger='00000000-0000-0000-0000-000000000012',workerId='11111111-1111-1111-1111-111111111111';
-  const actor=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated')};
+  const actor=async(id,anon=false)=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.query("select set_config('request.jwt.claim.is_anonymous',$1,false)",[anon?'true':'false']);await db.exec('set role authenticated')};
   const rpc=async(sql,args=[])=> (await db.query(sql,args)).rows[0].result;
   await actor(workerOwner);
   const restored=await rpc('select rpc_my_worker_profile() result');assert.equal(restored.id,workerId);
@@ -62,5 +64,11 @@ test('SQL migrations, safe discovery, booking exclusion, messages and private au
   await assert.rejects(()=>rpc("select rpc_send_message($1,'audio',null,$2,'sql-forged-audio') result",[job.id,`${stranger}/onboarding/secret.webm`]),/FORBIDDEN/);
   await actor(workerOwner);await rpc('select rpc_set_availability(false,$1) result',['sql-offline']);
   assert.equal((await rpc('select rpc_my_worker_profile() result')).isAvailableNow,false);
+  const anonUser='00000000-0000-0000-0000-000000000099';
+  await db.exec('reset role');
+  await db.query("insert into auth.users(id,email,is_anonymous) values($1,'anon@roshanrozgar.pk',true)",[anonUser]);
+  await actor(anonUser,true);
+  await assert.rejects(()=>rpc('select rpc_my_worker_profile() result'),/UNAUTHENTICATED/);
+  await assert.rejects(()=>rpc("select rpc_create_job_request($1,'electrician','g-10-islamabad','Anon attempt','fixed',null,'anon-req') result",[workerId]),/UNAUTHENTICATED/);
  }finally{await db.close()}
 });

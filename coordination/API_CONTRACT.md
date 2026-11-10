@@ -31,10 +31,14 @@ Review: `{ id, jobId, workerId, authorId, rating, punctuality, priceHonoured, te
 
 | Function | Input | Successful data |
 |---|---|---|
-| ensureSession | none; reuse existing or create configured anonymous auth session | Session |
+| ensureSession | none; requires existing registered user session | Session |
 | getSession | none | Session or null |
-| getMyWorkerProfile | none; authenticated caller only | Worker or null if no worker profile |
+| getMyWorkerProfile | none; authenticated registered caller only | Worker or null if no worker profile |
 | signOut | none | `{ signedOut: true }` |
+| register / signUp | `{ email, password, displayName, redirectTo? }` | `{ user: Session, sessionConfirmed: boolean, confirmationRequired: boolean, message: string }` |
+| signIn / signInWithPassword | `{ email, password }` | Session |
+| requestPasswordReset / resetPasswordForEmail | `{ email, redirectTo? }` | `{ sent: boolean, message: string }` |
+| resetPassword / updatePassword | `{ newPassword }` | `{ updated: boolean, message: string }` |
 | saveWorkerProfile | `{ fields: { name, tradeIds, localityId, serviceAreaIds, yearsExperience, bio }, idempotencyKey }` | Worker |
 | getWorker | `{ workerId }` | `{ worker, reviews: Review[] }` |
 | listWorkers | `{ tradeId?, localityId, query?, sort: 'recommended' or 'nearest', limit: 3..20 }` | `{ items: Worker[], hasMore: boolean }` |

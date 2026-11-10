@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as api from '../../lib/api/index.js';
 import {requirePublicConfiguration} from '../../lib/supabase/configuration.js';
-test('real facade exports the frontend contract including own-profile restoration',()=>{
- for(const name of ['ensureSession','getSession','getMyWorkerProfile','signOut','saveWorkerProfile','getWorker','listWorkers','setAvailability','createRequest','listMyJobs','getJob','listMessages','sendMessage','issueQuote','acceptQuote','transitionJob','submitReview','reportIssue','uploadAudio','getAudioPlaybackUrl','extractVoice'])assert.equal(typeof api[name],'function',name);
+ test('real facade exports the frontend contract including own-profile restoration and registered auth',()=>{
+ for(const name of ['ensureSession','getSession','getMyWorkerProfile','signOut','saveWorkerProfile','getWorker','listWorkers','setAvailability','createRequest','listMyJobs','getJob','listMessages','sendMessage','issueQuote','acceptQuote','transitionJob','submitReview','reportIssue','uploadAudio','getAudioPlaybackUrl','extractVoice','register','signUp','signIn','signInWithPassword','requestPasswordReset','resetPasswordForEmail','resetPassword','updatePassword'])assert.equal(typeof api[name],'function',name);
 });
 test('missing browser/backend setup is a normalized failure, never an in-memory success',async()=>{
  for(const result of [await api.ensureSession(),await api.getSession(),await api.getMyWorkerProfile(),await api.listWorkers({localityId:'g-10-islamabad'})]){
