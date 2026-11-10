@@ -7,10 +7,12 @@
     "dev": "next dev --hostname 0.0.0.0 --webpack",
     "build": "next build --webpack",
     "export:figma": "node scripts/export-figma.mjs",
-    "test": "node --test tests/backend/domain_and_contract.test.js tests/backend/facade_contract.test.js tests/backend/auth_registered.test.js tests/backend/hosted_acceptance.test.js tests/backend/voice_integration.test.js tests/backend/postgres_integration.test.js tests/ui/demo-contract.test.mjs tests/ui/job-policy.test.mjs tests/ui/auth-policy.test.mjs",
+    "test": "node --test tests/backend/domain_and_contract.test.js tests/backend/facade_contract.test.js tests/backend/auth_registered.test.js tests/backend/voice_integration.test.js tests/backend/postgres_integration.test.js tests/ui/demo-contract.test.mjs tests/ui/job-policy.test.mjs tests/ui/auth-policy.test.mjs tests/backend/proxy.test.js tests/backend/auth_callback.test.js",
     "test:live-voice": "node tests/backend/smoke_urdu.js",
     "test:ui": "tsx --tsconfig tests/ui/tsconfig.json --test tests/ui/job-workspace.test.jsx tests/ui/voice-composer.test.jsx tests/ui/auth-page.test.jsx tests/ui/worker-onboarding.test.jsx",
-    "start": "next start --hostname 0.0.0.0"
+    "start": "next start --hostname 0.0.0.0",
+    "test:hosted": "node --test tests/backend/hosted_acceptance.test.js",
+    "check": "npm test && npm run test:ui && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -26,5 +28,8 @@
     "@testing-library/user-event": "^14.6.9",
     "jsdom": "^31.0.0",
     "tsx": "^4.23.15"
+  },
+  "engines": {
+    "node": "24.x"
   }
 }

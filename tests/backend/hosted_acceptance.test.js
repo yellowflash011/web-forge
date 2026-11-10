@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
-const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+// This suite creates accounts and job data. Run only against an explicitly selected test project.
+const SUPABASE_URL=process.env.ACCEPTANCE_SUPABASE_URL;
+const ANON_KEY=process.env.ACCEPTANCE_SUPABASE_PUBLISHABLE_KEY||process.env.ACCEPTANCE_SUPABASE_ANON_KEY;
+if(process.env.RUN_HOSTED_ACCEPTANCE!=='1'||!SUPABASE_URL||!ANON_KEY)throw Error('BLOCKED: set RUN_HOSTED_ACCEPTANCE=1, ACCEPTANCE_SUPABASE_URL and ACCEPTANCE_SUPABASE_PUBLISHABLE_KEY for a disposable test project.');
 
 function makeClient() {
   return createClient(SUPABASE_URL, ANON_KEY, {
@@ -16,16 +18,17 @@ function makeClient() {
 
 test('Hosted Acceptance: Multi-Session Registered User Verification', async () => {
   const runId = Date.now();
+  const emailDomain=process.env.ACCEPTANCE_EMAIL_DOMAIN||'example.com';
   const workerClient = makeClient();
   const customerAClient = makeClient();
   const customerBClient = makeClient();
   const outsiderClient = makeClient();
 
-  const workerEmail = `worker_${runId}@roshanrozgar.pk`;
-  const customerAEmail = `cust_a_${runId}@roshanrozgar.pk`;
-  const customerBEmail = `cust_b_${runId}@roshanrozgar.pk`;
-  const outsiderEmail = `outsider_${runId}@roshanrozgar.pk`;
-  const password = 'StrongPassword123!';
+  const workerEmail = `worker_${runId}@${emailDomain}`;
+  const customerAEmail = `cust_a_${runId}@${emailDomain}`;
+  const customerBEmail = `cust_b_${runId}@${emailDomain}`;
+  const outsiderEmail = `outsider_${runId}@${emailDomain}`;
+  const password = crypto.randomUUID()+'Aa1!';
 
   // 1. Registration & Session Verification
   const { data: regWorker, error: errWorkerReg } = await workerClient.auth.signUp({
@@ -157,26 +160,22 @@ test('Hosted Acceptance: Multi-Session Registered User Verification', async () =
   assert.equal(quoteBErr, null);
   const quoteB = quoteBData.latestQuote;
 
-  // Customer A accepts first -> succeeds and locks assignment
-  const { data: acceptAData, error: acceptAErr } = await customerAClient.rpc('rpc_accept_quote', {
-    p_job_id: jobA.id,
-    p_quote_id: quoteA.id,
-    p_expected_version: quoteAData.version,
-    p_idempotency_key: `idemp-accA-${runId}`,
-  });
-  assert.equal(acceptAErr, null);
-  assert.equal(acceptAData.state, 'confirmed');
-
-  // Customer B attempts to accept while worker is actively assigned -> MUST fail with worker busy/unavailable
-  const { data: acceptBData, error: acceptBErr } = await customerBClient.rpc('rpc_accept_quote', {
-    p_job_id: jobB.id,
-    p_quote_id: quoteB.id,
-    p_expected_version: quoteBData.version,
-    p_idempotency_key: `idemp-accB-${runId}`,
-  });
-  assert.equal(acceptBData, null);
-  assert.ok(acceptBErr, 'Second concurrent customer booking must be rejected');
-  assert.match(acceptBErr.message, /busy|engaged|unavailable|assignment/i);
+  // Dispatch independent client requests together. Either customer may win.
+  const attempts=await Promise.all([
+    customerAClient.rpc('rpc_accept_quote',{p_job_id:jobA.id,p_quote_id:quoteA.id,p_expected_version:quoteAData.version,p_idempotency_key:`race-a-${runId}`}),
+    customerBClient.rpc('rpc_accept_quote',{p_job_id:jobB.id,p_quote_id:quoteB.id,p_expected_version:quoteBData.version,p_idempotency_key:`race-b-${runId}`}),
+  ]);
+  assert.equal(attempts.filter(result=>!result.error&&result.data?.state==='confirmed').length,1,'Exactly one simultaneous acceptance must succeed');
+  const losing=attempts.find(result=>result.error);assert.ok(losing);assert.match(losing.error.message,/busy|engaged|unavailable|assignment/i);
+  let acceptAData=attempts[0].data;
+  if(attempts[1].data?.state==='confirmed'){
+    // Release B's winning test booking so the remaining A journey is deterministic.
+    const released=await customerBClient.rpc('rpc_transition_job',{p_job_id:jobB.id,p_action:'cancel',p_expected_version:attempts[1].data.version,p_reason:'Acceptance test cleanup before A journey',p_idempotency_key:`release-b-${runId}`});
+    assert.equal(released.error,null);
+    const retried=await customerAClient.rpc('rpc_accept_quote',{p_job_id:jobA.id,p_quote_id:quoteA.id,p_expected_version:quoteAData.version,p_idempotency_key:`retry-a-${runId}`});
+    assert.equal(retried.error,null);acceptAData=retried.data;
+  }
+  assert.equal(acceptAData.state,'confirmed');
 
   // 6. Messaging & Private Access Authorization
   // Customer A sends message
@@ -438,7 +437,7 @@ test('Hosted Acceptance: Multi-Session Registered User Verification', async () =
   assert.equal(outsiderBlob, null);
   assert.ok(downloadErr, 'Storage RLS must deny unauthorized downloads');
 
-  // 12. Password Reset Flow Verification
+  // 12. Authenticated password change (email recovery link must be verified separately)
   const { error: updatePassErr } = await customerBClient.auth.updateUser({
     password: 'NewChangedPassword789!',
   });

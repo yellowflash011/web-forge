@@ -17,6 +17,15 @@ test('provider receives actual audio bytes and whitelist validation drops invent
 test('missing transcript is rejected instead of manufacturing a successful extraction',()=>{
  assert.throws(()=>validateSuggestions({fields:{name:'Guess'}},'worker_profile'));
 });
+
+test('voice fallback preserves a real English transcript when Gemini remains unavailable',async()=>{
+ let transcriptionLanguage=null,geminiCalls=0;
+ const result=await extractAudio({bytes:new Uint8Array([1,2]),mimeType:'audio/webm',purpose:'job_request',locale:'en',apiKey:'test-gemini',groqApiKey:'test-groq',model:'test-model',fetchImpl:async(url,input)=>{
+  if(url.includes('api.groq.com')){transcriptionLanguage=input.body.get('language');return new Response(JSON.stringify({text:'I need a plumber in g-10 to fix a tap.'}),{status:200})}
+  geminiCalls++;throw Error('Provider temporarily unavailable');
+ }});
+ assert.equal(transcriptionLanguage,'en');assert.equal(geminiCalls,2);assert.equal(result.fields.tradeId,'plumber');assert.equal(result.fields.localityId,'g-10-islamabad');assert.equal(result.transcript,'I need a plumber in g-10 to fix a tap.');assert.ok(!('price' in result.fields));
+});
 test('missing spoken fields do not erase manual entries or introduce model authority fields',()=>{
  const current={name:'Manual Name',tradeIds:['plumber'],localityId:'g-10-islamabad',serviceAreaIds:['g-10-islamabad'],yearsExperience:'',bio:''};
  const next=applyProfileSuggestions(current,{name:null,tradeIds:[],yearsExperience:0,price:500,state:'completed'});

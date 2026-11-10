@@ -1,4 +1,4 @@
-import {getSupabaseBrowserClient} from '../../lib/supabase/client';
+import {getSupabaseBrowserClient} from '../../lib/supabase/client.js';
 
 // Frontend auth uses the same Supabase client/cookies as the domain facade.
 // Backend authorization and hosted provider configuration remain Machine B's responsibility.
@@ -20,9 +20,9 @@ export async function authenticate(operation,input={}) {
  }catch(error){return {data:null,error:{message:error?.message||'Your account request could not finish. Please retry.'}}}
 }
 
-export async function finishAuthRedirect(code){
- const client=await getSupabaseBrowserClient();
- if(code){const {data}=await client.auth.getSession();if(!data.session){const {error}=await client.auth.exchangeCodeForSession(code);if(error)throw error}}
+export async function finishAuthRedirect(code,{getClient=getSupabaseBrowserClient}={}){
+ const client=await getClient();
+ if(code){const {error}=await client.auth.exchangeCodeForSession(code);if(error)throw error}
  const {data,error}=await client.auth.getUser();
  if(error||!data.user||data.user.is_anonymous)throw Error('This link is invalid or has expired. Request a new email link.');
  return data.user;

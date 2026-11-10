@@ -2,13 +2,19 @@
 
 A Next.js App Router marketplace for finding nearby professionals, agreeing quotes, and managing local jobs. The root application is in this directory; `web-forge-project/` is the preserved partner starter.
 
+## Production deployment
+
+See [the Vercel deployment guide](docs/VERCEL_DEPLOYMENT.md) for exact root-directory, Node 24, environment, Supabase migration/function and auth redirect settings. Server-side Proxy verifies registered users before rendering protected pages and preserves refreshed cookies. Callback codes exchange explicitly once. Live acceptance is a separate opt-in suite that writes test data; ordinary npm test is local and does not create hosted accounts.
+
+At the latest audit, local Supabase was unreachable and the configured hosted discovery RPC returned PGRST202. Gemini generation and Groq model-list checks succeeded, but complete hosted Urdu/audio/auth acceptance remains open. Production release requires hosted migration/function setup and real email/browser verification.
+
 ## Registered-account and voice update
 
 Application routes now require email/password accounts. Login, registration, email confirmation, password recovery/reset and signout use the shared Supabase client. No guest, SMS or payment flow is offered. Configure localhost/deployment auth redirect URLs for /auth/callback/ and /auth/reset-password/; hosted auth/RLS enforcement remains Machine B's deployment gate.
 
 Job threads support record/preview/upload/send and private playback; request audio can produce a user-confirmed task suggestion. Worker onboarding and workspace provide Urdu/English controls and RTL. Spoken prompts depend on installed device speech voices and report missing Urdu support. Some secondary strings remain English. See coordination/AUTH_VOICE_FRONTEND_HANDOFF.md for integration and verification limits.
 
-Current local suites: 25 contract/domain/database/policy checks and 14 UI checks. Email delivery, real microphone/Storage transfers, hosted booking concurrency and real Gemini accuracy require hosted verification.
+Current local suites: 35 contract/domain/database/policy checks and 14 UI checks. Email delivery, real microphone/Storage transfers, hosted booking concurrency and real Gemini accuracy require hosted verification.
 
 ## Run locally
 
@@ -61,7 +67,7 @@ npm run test:ui
 npm run build
 ```
 
-The first command runs 25 domain, facade, voice-boundary, local PostgreSQL, demo-contract and job-policy checks. The UI suite runs 14 interactive component journeys, including account and voice behavior alongside: fixed-price completion/review, stale consent, inspection/repair approval, issue reporting, lost-response quote retry and cancellation. Its role-scoped in-memory adapter is separate from real Supabase.
+The first command runs 35 domain, facade, voice-boundary, local PostgreSQL, demo-contract and job-policy checks. The UI suite runs 14 interactive component journeys, including account and voice behavior alongside: fixed-price completion/review, stale consent, inspection/repair approval, issue reporting, lost-response quote retry and cancellation. Its role-scoped in-memory adapter is separate from real Supabase.
 
 Routing was also checked in a browser using an isolated explicit demo process: profile links, back/forward, retained filters/saves/drafts, request creation, message persistence after refresh, worker creation/editing, and denied signed-out job access. Desktop (1440px) and phone (390px) screenshots are in `tests/ui/evidence/`. See `coordination/status-A.md` for the current handoff and limitations.
 
