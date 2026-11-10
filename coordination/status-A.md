@@ -6,7 +6,7 @@ Branch: implementation/frontend
 
 Batch: A0/A1 implemented against explicit local demo adapter; early A2 request/conversation UI prepared. Real cross-device gates remain pending B1/B2.
 
-Latest pushed SHA: pending this batch's commit.
+Latest implementation SHA: ee03da1, published on implementation/frontend. This status document is finalized in the following documentation commit; use the branch head for the latest complete handoff.
 
 Ready screens / changes:
 - Root app uses modular marketplace UI, reusable domain components and separate recording lifecycle hook.
