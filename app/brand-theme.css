@@ -4,7 +4,7 @@
  --paper:#F8F5EF;--white:#FFFFFF;--sage:#E8EDF5;--line:#D6DFEC;
  --lime:#C9D9F4;--gold:#F28A72;--accent:#F28A72;--tertiary:#2D4770;
 }
-body{background:radial-gradient(ellipse at 95% 0%,#F28A720B,transparent 40%),var(--paper)}
+html,body{background:var(--paper)}
 h1,h2,h3,.brand{color:var(--green)}
 ::selection{background:#F28A7245;color:#172B4D}
 .site-header{background:#FCFAF6F2;border-bottom-color:var(--line)}
@@ -26,7 +26,7 @@ h1,h2,h3,.brand{color:var(--green)}
 .request-card,.worker-card,.booking-panel,.onboard-card,.agreement,.quote-editor,.account-panel{
  border-color:var(--line);box-shadow:0 8px 30px #172B4D08,0 1px 0 #FFFFFF inset;
 }
-.request-card{background:linear-gradient(155deg,#FFFFFF,#EDF1F8);border-top:3px solid var(--accent)}
+.request-card{background:#FFFFFF;border-top:3px solid var(--accent)}
 .worker-card{background:white;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease;transform-style:preserve-3d}
 .worker-photo.sage,.worker-photo{background:#E8EDF5}
 .save-btn.saved{color:#9B4031;background:#FFF0EB}
@@ -40,7 +40,7 @@ h1,h2,h3,.brand{color:var(--green)}
 .toggle.on{background:var(--green)}
 .language-tools button[aria-pressed=true]{background:var(--green);color:white;border-color:var(--green)}
 .auth-story{
- background:radial-gradient(ellipse at 95% 95%,#2D4770 0%,transparent 60%),#172B4D;
+ background:#172B4D;
  color:#F8F5EF;box-shadow:0 25px 55px #172B4D24;
  transform-style:preserve-3d;animation:roshan-arrive .75s cubic-bezier(.2,.75,.25,1) both;
 }
@@ -72,3 +72,9 @@ h1,h2,h3,.brand{color:var(--green)}
 @media(prefers-reduced-motion:reduce){
  .auth-story,.auth-form-panel,.auth-sun,.worker-card,.request-card,.brand-icon,.btn{animation:none!important;transition:none!important;transform:none!important}
 }
+
+/* Consistent neutral surfaces throughout the app. */
+.site-header,.mobile-nav{background:#F8F5EF}
+.request-input,.profile-form input:not([type=checkbox]),.profile-form textarea,.profile-form select,.message-composer input{background:#FFFFFF;border-color:var(--line)}
+.empty-state,.availability-panel,.availability-panel.offline,.voice-input,.request-audio,.quote-preview,.inspection-credit,.job-state-guidance,.worker-quote-callout{background:#F1EFEB;border-color:var(--line)}
+.booking-panel,.onboard-card,.account-panel,.worker-side,.agreement,.quote-editor,.consent-card,.review-form,.job-actions,.conversation{background:#FFFFFF}
