@@ -1,5 +1,26 @@
 # Machine A status
 
+## Quote, job action and review UI — current frontend batch
+
+Implemented on implementation/frontend after integration repair 4372a88. Backend files, database migrations and shared environment were not changed in this batch. Machine B continues live verification; no API contract changes are required.
+
+Ready:
+- Dedicated job workspace and controller; role-aware controls consume server allowedActions for transitions. Dedicated quote/review/issue operations remain server-authorized.
+- Worker quote editor supports fixed labour, inspection visit fee, and repair-after-inspection with a carried-forward visit fee and explicit credit choice. Money is parsed exactly into minor units. Materials require separate approval.
+- Expiry and immutable quote/version are shown. Customer opens an explicit confirmation, checks the agreement, and submits the exact quote ID and job version. Changed/expired quotes invalidate open consent.
+- Worker responds, starts the visit/work and marks work done; customer confirms completion. Cancellation/decline reasons and issue reporting have confirmation flows. Stale actions reconcile from the server, and duplicate clicks/retries retain intent keys.
+- Completed-job review has 1-5 stars, optional punctuality/price-honoured tags, text and an actual submitted state. Unknown tags are omitted rather than falsely stored as negative. Existing review evidence is checked and a refreshed submitted review does not recreate the form.
+- Text conversation uses cursor refresh. Private audio messages can request/reload a short-lived playback URL. Microphone upload is unchanged from the earlier onboarding work.
+- Phone layout brings the agreement/actions above the conversation, keeps active editing/confirmation in focus, and scrolls to feedback after completion. Account identity changes remount the workspace to clear prior-session state.
+
+Verification passed: npm test (23 local domain/contract/PostgreSQL/presentation checks), npm run test:ui (6 interactive component journeys against a role-scoped in-memory test adapter), and npm run build. Component checks cover fixed-price completion/review, stale quote consent, inspection credit/repair approval, issue reporting without completion, lost-response quote retry, and cancellation reasons. These are not hosted end-to-end results. Browser visual checks used the same rendered fixture DOM at 1440px desktop and 390px phone; the phone had no horizontal overflow. Screenshots: tests/ui/evidence/job-quote-editor-desktop.png and job-review-mobile.png. The temporary fixture server was stopped after inspection. No credentials or user recordings were used in these UI checks.
+
+Money handoff for B5: repair quote labourMinor is the full repair-labour figure; visitFeeMinor carries the already-accepted inspection fee, and visitFeeCredited determines whether that prior fee reduces remaining labour. The UI blocks acceptance when a repair quote's carried visit fee conflicts with the prior inspection agreement; it does not guess a missing credit or claim payment was received.
+
+Known backend follow-up (not edited here): computeAllowedActions currently returns decline in quoted state but SQL transitionJob permits decline only from requested/discussing. UI suppresses that specific broken action, while retaining revise-quote and customer cancellation. The redundant release_assignment action in awaiting_completion is also suppressed because work_done already releases the physical assignment. B can reconcile these capabilities after its live checks.
+
+Remaining verification: B5 hosted auth/Storage/AI, real simultaneous booking and a cross-device demonstration with the newly completed UI. No live deployment claim is made by this frontend batch. Prior checkpoints below are retained as history.
+
 ## Integration repair — current checkpoint
 
 User explicitly authorized Machine A to repair backend gaps. Merged origin/implementation/backend (f94f21a) into implementation/frontend. Prior ownership is temporarily overridden for these integration fixes; Machine B's next task is deployment/live B5, documented in MACHINE_B_NEXT_TASK.md.

@@ -8,3 +8,4 @@ public/figma-design.html
 .env.*
 !.env.example
 tmp/
+tests/ui/evidence/*.html

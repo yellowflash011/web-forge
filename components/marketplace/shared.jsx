@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { ArrowUpRight, Wrench, Zap, MapPin, Star, ArrowLeft, CircleHelp } from 'lucide-react';
 export const areas=[{id:'g-10-islamabad',name:'G-10, Islamabad'},{id:'g-9-islamabad',name:'G-9, Islamabad'},{id:'g-11-islamabad',name:'G-11, Islamabad'}];
 export const trades=[{id:'plumber',name:'Plumber',icon:Wrench},{id:'electrician',name:'Electrician',icon:Zap}];
