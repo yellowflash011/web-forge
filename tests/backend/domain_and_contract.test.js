@@ -386,9 +386,17 @@ test('7. Allowed Actions: strict role-based capability computation', () => {
   const custActions = computeAllowedActions(jobAwaitingComp, customerId, workerOwnerId);
   assert.deepEqual(custActions, ['confirm_completion']);
 
-  // Worker should see release_assignment
+  // Worker has already released assignment on mark_work_done; no redundant release_assignment
   const workerActions = computeAllowedActions(jobAwaitingComp, workerOwnerId, workerOwnerId);
-  assert.deepEqual(workerActions, ['release_assignment']);
+  assert.deepEqual(workerActions, []);
+
+  // Worker in issue_open should see release_assignment
+  const jobIssueOpen = { ...jobAwaitingComp, state: JOB_STATES.ISSUE_OPEN };
+  assert.deepEqual(computeAllowedActions(jobIssueOpen, workerOwnerId, workerOwnerId), ['release_assignment']);
+
+  // Worker in quoted state should not see decline (matches SQL transitionJob)
+  const jobQuoted = { ...jobAwaitingComp, state: JOB_STATES.QUOTED };
+  assert.deepEqual(computeAllowedActions(jobQuoted, workerOwnerId, workerOwnerId), []);
 
   // Unrelated user should see empty array
   const strangerActions = computeAllowedActions(jobAwaitingComp, 'stranger-789', workerOwnerId);
