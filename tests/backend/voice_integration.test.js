@@ -49,3 +49,8 @@ test('Edge handler enforces rate and storage authorization, then processes owned
  const privateFile=handler({audioAllowed:false});assert.equal((await privateFile.run(request(`${user}/onboarding/test.webm`))).status,403);assert.equal(privateFile.counts().providerCalls,0);
  const valid=handler();const response=await valid.run(request(`${user}/onboarding/test.webm`));assert.equal(response.status,200);assert.equal((await response.json()).data.fields.name,'Ali');assert.equal(valid.counts().providerCalls,1);
 });
+
+ test('expanded service catalogue preserves supported skills and rejects unknown ones',()=>{
+ const result=validateSuggestions({transcript:'I repair AC units',fields:{tradeIds:['ac-technician','carpenter','invented-skill']}},'worker_profile');
+ assert.deepEqual(result.fields.tradeIds,['ac-technician','carpenter']);
+ });

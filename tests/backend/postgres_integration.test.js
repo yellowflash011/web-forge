@@ -24,7 +24,7 @@ test('SQL migrations, safe discovery, booking exclusion, messages and private au
    grant all on storage.objects to authenticated;
    alter default privileges in schema public grant all on tables to anon,authenticated;
   `);
-  for(const file of ['20261110000001_initial_schema.sql','20261110000002_domain_rpcs.sql','20261110000003_seed_data.sql','20261110000004_integration_hardening.sql','20261110000005_registered_accounts.sql']){
+  for(const file of ['20261110000001_initial_schema.sql','20261110000002_domain_rpcs.sql','20261110000003_seed_data.sql','20261110000004_integration_hardening.sql','20261110000005_registered_accounts.sql','20261110000006_expand_worker_trades.sql']){
    if(file==='20261110000005_registered_accounts.sql')await db.query("insert into auth.users(id,email,email_confirmed_at) values('00000000-0000-0000-0000-000000000088','pending@example.com',null)");
    let sql=await readFile(new URL(`../../supabase/migrations/${file}`,import.meta.url),'utf8');
    // PGlite already provides gen_random_uuid; its optional pgcrypto extension is absent.
@@ -38,6 +38,7 @@ test('SQL migrations, safe discovery, booking exclusion, messages and private au
   const restored=await rpc('select rpc_my_worker_profile() result');assert.equal(restored.id,workerId);
   assert.equal(restored.completedJobCount,2);assert.equal(restored.reviewCount,2);
   await actor(customer);
+  assert.deepEqual((await rpc("select rpc_discover_workers('ac-technician','g-10-islamabad','','recommended',20) result")).items,[]);
   const discover=()=>rpc("select rpc_discover_workers(null,'g-10-islamabad','','recommended',20) result");
   assert.ok((await discover()).items.some(w=>w.id===workerId));
   const job=await rpc("select rpc_create_job_request($1,'electrician','g-10-islamabad','Breaker trips','fixed',null,'sql-request-1') result",[workerId]);

@@ -1,4 +1,4 @@
-const TRADES=['plumber','electrician'];
+import { TRADE_CATALOG, SUPPORTED_TRADES as TRADES } from './trades.js';
 const AREAS=['g-9-islamabad','g-10-islamabad','g-11-islamabad'];
 export const AUDIO_TYPES=['audio/webm','audio/ogg','audio/wav','audio/mpeg','audio/mp4','audio/aac'];
 export const MAX_AUDIO_BYTES=5*1024*1024;
@@ -66,7 +66,7 @@ export async function extractAudio({bytes,mimeType,purpose,locale='ur',apiKey,mo
   }
   // Heuristic trade/locality matching if Gemini unavailable
   const lower=transcript.toLowerCase();
-  const matchedTrades=TRADES.filter(t=>lower.includes(t)||(t==='plumber'&&(lower.includes('پلمبر')||lower.includes('نل')))||(t==='electrician'&&(lower.includes('الیکٹریشن')||lower.includes('بجلی'))));
+  const matchedTrades=TRADES.filter(t=>lower.includes(t)||lower.includes(t.replaceAll('-', ' '))||TRADE_CATALOG.some(item=>item.id===t&&(lower.includes(item.name.toLowerCase())||lower.includes(item.nameUr)))||(t==='plumber'&&(lower.includes('پلمبر')||lower.includes('نل')))||(t==='electrician'&&(lower.includes('الیکٹریشن')||lower.includes('بجلی'))));
   const matchedLocality=AREAS.find(a=>lower.includes(a.replace('-islamabad',''))||lower.includes(a));
   const fields=purpose==='worker_profile'?{name:null,tradeIds:matchedTrades,localityId:matchedLocality||null,serviceAreaIds:matchedLocality?[matchedLocality]:[],yearsExperience:null,bio:transcript}:{tradeId:matchedTrades[0]||null,localityId:matchedLocality||null,task:transcript};
   return validateSuggestions({transcript,fields,ambiguities:[]},purpose);

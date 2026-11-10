@@ -3,7 +3,8 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Wrench, Zap, MapPin, Star, ArrowLeft, CircleHelp } from 'lucide-react';
 export const areas=[{id:'g-10-islamabad',name:'G-10, Islamabad'},{id:'g-9-islamabad',name:'G-9, Islamabad'},{id:'g-11-islamabad',name:'G-11, Islamabad'}];
-export const trades=[{id:'plumber',name:'Plumber',icon:Wrench},{id:'electrician',name:'Electrician',icon:Zap}];
+import { TRADE_CATALOG } from '../../supabase/functions/_shared/trades.js';
+export const trades=TRADE_CATALOG.map(trade=>({...trade,icon:trade.id==='electrician'?Zap:Wrench}));
 export const areaName=id=>areas.find(a=>a.id===id)?.name||'Area not provided';
 export const tradeName=id=>trades.find(t=>t.id===id)?.name||id;
 export function Logo(){return <span className="brand"><span className="brand-icon"><span/><span/><span/><span/></span><span>roshan<span className="brand-light">rozgar</span><small>GOOD WORK. CLOSE TO HOME.</small></span></span>}
