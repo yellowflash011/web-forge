@@ -1,5 +1,7 @@
 # Vercel deployment and release checks
 
+Deployment update: the new hosted project `llhmnmmfhhlhlgghqyqh` now has all five migrations and the active voice function. Auth redirects target https://web-forge-94gs.vercel.app. Import the generated `.env.vercel` file and redeploy. See [the actual deployment record](SUPABASE_DEPLOYED.md) for verified results and remaining live acceptance. The older audit snapshot below describes the previous configuration.
+
 The repository-root Next.js application is deployable on Vercel. The old `web-forge-project/` starter and `out/` directory are not the deployment target. Vercel hosts the web application. Supabase separately hosts Auth, Postgres, private Storage and the `extract-voice` function.
 
 ## Current audit result

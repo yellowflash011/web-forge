@@ -1,4 +1,18 @@
 project_id = "roshan-rozgar"
 
+[auth]
+site_url = "https://web-forge-94gs.vercel.app"
+additional_redirect_urls = ["https://web-forge-94gs.vercel.app/auth/callback/**", "https://web-forge-94gs.vercel.app/auth/reset-password/**", "http://localhost:3000/auth/callback/**", "http://localhost:3000/auth/reset-password/**"]
+enable_signup = true
+enable_anonymous_sign_ins = false
+minimum_password_length = 8
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+
+[auth.sms]
+enable_signup = false
+
 [functions.extract-voice]
 verify_jwt = true

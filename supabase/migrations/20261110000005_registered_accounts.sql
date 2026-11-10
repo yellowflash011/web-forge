@@ -23,10 +23,9 @@ $$;
 revoke all on function public.registered_uid() from public;
 grant execute on function public.registered_uid() to anon, authenticated, service_role;
 
--- Ensure existing seed or non-anonymous accounts have confirmed status
-update auth.users
-set email_confirmed_at = coalesce(email_confirmed_at, created_at, now())
-where not coalesce(is_anonymous, false) and email_confirmed_at is null;
+-- Preserve existing verification state. The seed migration creates its own
+-- explicitly confirmed demo identities; real users must verify their email
+-- through Supabase Auth. Never auto-confirm unrelated existing accounts.
 
 -- 2. Protected functions: identical bodies, registered caller only ----------
 -- Generated mechanically from the 00002/00004 definitions by replacing

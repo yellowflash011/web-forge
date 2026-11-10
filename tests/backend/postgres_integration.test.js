@@ -25,10 +25,12 @@ test('SQL migrations, safe discovery, booking exclusion, messages and private au
    alter default privileges in schema public grant all on tables to anon,authenticated;
   `);
   for(const file of ['20261110000001_initial_schema.sql','20261110000002_domain_rpcs.sql','20261110000003_seed_data.sql','20261110000004_integration_hardening.sql','20261110000005_registered_accounts.sql']){
+   if(file==='20261110000005_registered_accounts.sql')await db.query("insert into auth.users(id,email,email_confirmed_at) values('00000000-0000-0000-0000-000000000088','pending@example.com',null)");
    let sql=await readFile(new URL(`../../supabase/migrations/${file}`,import.meta.url),'utf8');
    // PGlite already provides gen_random_uuid; its optional pgcrypto extension is absent.
    sql=sql.replace('create extension if not exists "pgcrypto";','');await db.exec(sql);
   }
+  assert.equal((await db.query("select email_confirmed_at from auth.users where id='00000000-0000-0000-0000-000000000088'")).rows[0].email_confirmed_at,null,'Migration must not auto-confirm existing users');
   const customer='00000000-0000-0000-0000-000000000011',workerOwner='00000000-0000-0000-0000-000000000001',stranger='00000000-0000-0000-0000-000000000012',workerId='11111111-1111-1111-1111-111111111111';
   const actor=async(id,anon=false)=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.query("select set_config('request.jwt.claim.is_anonymous',$1,false)",[anon?'true':'false']);await db.exec('set role authenticated')};
   const rpc=async(sql,args=[])=> (await db.query(sql,args)).rows[0].result;
