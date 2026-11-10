@@ -1,5 +1,15 @@
 # Roshan Rozgar — Next.js design prototype
 
+## Current implementation checkpoint — Machine A
+
+The root app now uses a modular frontend with explicit local demo services. The submitted design remains at `/design/` and the existing HTML exports are preserved. See `coordination/status-A.md` for connected calls, verification and the B1 integration requirement.
+
+Working locally: guest session/signout, confirmed worker-profile creation/editing, service areas, availability with expiry, filtered discovery, public profiles, saved IDs, request creation and text conversations. Local demo records persist across refresh in this browser only. Booking confirmation, worker/customer cross-device messages, quote operations, real authentication, AI and database authorization await Machine B. Demo operations must not be presented as real services.
+
+Frontend service seam: `features/marketplace/services.js`. Backend ownership remains `lib/api/`, `lib/supabase/` and `supabase/`; these directories were not created or edited by Machine A. Build and development caches are separated to avoid breaking the running preview during production builds.
+
+Run the focused fixture-contract checks with `node --test tests/ui/demo-contract.test.mjs`. They test local UI development fixtures, not real Supabase permissions or concurrency.
+
 A responsive frontend design for a voice-first neighbourhood trade marketplace. Built with Next.js App Router, React and Lucide icons. No Supabase or AI service is connected yet.
 
 ## Open locally
