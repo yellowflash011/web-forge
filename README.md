@@ -38,3 +38,8 @@ All worker names, experience, reviews, jobs and conversation text are illustrati
 Fonts: DM Sans, Manrope and Noto Sans Arabic via Google Fonts. Icons: Lucide (ISC license). Dependencies retain their respective licenses. AI coding assistance: OpenAI Codex. No runtime AI service used in this prototype.
 
 See COMPLETE_APP_BLUEPRINT.md for the planned connected backend and business logic. Its earlier Vite proposal is superseded by the user's choice of Next.js in this implementation. Static export is for the design delivery; adding server routes later requires changing the export configuration or keeping privileged operations in external functions.
+
+## Existing partner starter
+
+The existing Next.js/Supabase starter is preserved under web-forge-project/. Its Supabase dependencies are also retained in the root package. The root app is the design prototype; no backend connection is claimed. Installed node_modules and local environment configuration are excluded from source tracking.
+
