@@ -1,12 +1,13 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-// Next prerenders the full collection, so the design capture needs no React runtime.
-let html = readFileSync(resolve('out/design/index.html'), 'utf8');
+// The app uses normal dynamic Next routes; /design is still prerendered separately.
+// Read this build's design HTML, never a stale out/ export from the prototype.
+let html = readFileSync(resolve('.next/server/app/design.html'), 'utf8');
 html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
 html = html.replace(/<link\b[^>]*rel="(?:preload|modulepreload)"[^>]*>/gi, '');
 html = html.replace(/<link\b[^>]*href="([^\"]+\.css(?:\?[^\"]*)?)"[^>]*>/gi, (_, href) => {
-  const css = readFileSync(resolve('out', href.split('?')[0].replace(/^\//, '')), 'utf8');
+  const css = readFileSync(resolve('.next', href.split('?')[0].replace(/^\/_next\//, '')), 'utf8');
   return `<style>${css}</style>`;
 });
 html = html.replace(/src="(\/images\/[^\"]+)"/g, (_, path) => {

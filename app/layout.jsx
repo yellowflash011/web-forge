@@ -1,5 +1,7 @@
 import './globals.css';
 import './implementation.css';
 import './jobs.css';
-export const metadata = { title: 'Roshan Rozgar — Good work. Close to home.', description: 'A voice-first neighbourhood marketplace. Interactive design prototype.' };
-export default function RootLayout({children}) { return <html lang="en"><body>{children}</body></html>; }
+import './routing.css';
+import {MarketplaceProvider} from '../features/marketplace/provider';
+export const metadata = { title: 'Roshan Rozgar — Good work. Close to home.', description: 'Find nearby skilled professionals, agree a clear quote, and manage local jobs.' };
+export default function RootLayout({children}) { return <html lang="en" data-scroll-behavior="smooth"><body><MarketplaceProvider>{children}</MarketplaceProvider></body></html>; }

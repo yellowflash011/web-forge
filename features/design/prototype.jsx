@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import {useRouter} from 'next/navigation';
+import {paths} from '../marketplace/routes';
 import { ArrowUpRight, ArrowRight, ArrowLeft, MapPin, ChevronDown, ChevronRight, Mic, Search, SlidersHorizontal, Zap, Wrench, Wind, Hammer, Paintbrush, Plug, Star, Heart, Check, CheckCheck, ShieldCheck, Clock3, Play, Pause, Plus, X, Bell, Menu, Home, BriefcaseBusiness, UserRound, Volume2, Send, Phone, CircleHelp, BadgeCheck, Headphones, CheckCircle2, CalendarDays, Navigation, Sparkles, Languages, CircleDot, Square, RotateCcw } from 'lucide-react';
 
 const portraits = [
@@ -22,10 +24,11 @@ function Avatar({worker=workers[0],size='',className=''}){return <img className=
 function SectionHeading({eyebrow,title,children}){return <div className="section-heading"><div>{eyebrow&&<span className="eyebrow">{eyebrow}</span>}<h2>{title}</h2></div>{children}</div>}
 
 export default function Experience({gallery=false}){
+ const router=useRouter();
  const [screen,setScreen]=useState('discover');const [category,setCategory]=useState('All services');const [liked,setLiked]=useState([]);const [selected,setSelected]=useState(workers[0]);const [toast,setToast]=useState('');const [location,setLocation]=useState('G-10, Islamabad');const [locationOpen,setLocationOpen]=useState(false);const [query,setQuery]=useState('');const [sort,setSort]=useState('Recommended');const [available,setAvailable]=useState(true);const [stage,setStage]=useState('quote');const [messages,setMessages]=useState([]);const [draft,setDraft]=useState('');const [language,setLanguage]=useState('en');const [review,setReview]=useState(0);const [reviewDone,setReviewDone]=useState(false);const [onboard,setOnboard]=useState(0);const [workerName,setWorkerName]=useState('');const [recording,setRecording]=useState(false);const [recordUrl,setRecordUrl]=useState('');const recorder=useRef(null);const streamRef=useRef(null);const timerRef=useRef(null);
  const notify=(s)=>setToast(s);
- const go=(s)=>{setScreen(s);if(typeof window!=='undefined'){window.history.replaceState(null,'',`#${s}`);window.scrollTo({top:0,behavior:'smooth'});}};
- useEffect(()=>{const s=window.location.hash.slice(1);if(['discover','profile','job','worker','onboarding','saved','jobs'].includes(s))setScreen(s);return ()=>{clearTimeout(timerRef.current);streamRef.current?.getTracks().forEach(t=>t.stop());if(recordUrl)URL.revokeObjectURL(recordUrl);};},[]);
+ const go=(name)=>router.push(({discover:paths.home,profile:paths.home,job:paths.jobs,worker:paths.worker,onboarding:paths.onboarding,saved:paths.saved,jobs:paths.jobs})[name]||paths.home);
+ useEffect(()=>()=>{clearTimeout(timerRef.current);streamRef.current?.getTracks().forEach(t=>t.stop());if(recordUrl)URL.revokeObjectURL(recordUrl);},[]);
  useEffect(()=>{if(!toast)return;const id=setTimeout(()=>setToast(''),4200);return()=>clearTimeout(id)},[toast]);
  const startRecording=async()=>{if(recording){recorder.current?.stop();setRecording(false);clearTimeout(timerRef.current);return;}try{if(!navigator.mediaDevices?.getUserMedia)throw Error('Microphone needs HTTPS or localhost.');const stream=await navigator.mediaDevices.getUserMedia({audio:true});streamRef.current=stream;const rec=new MediaRecorder(stream);const chunks=[];rec.ondataavailable=e=>chunks.push(e.data);rec.onstop=()=>{if(recordUrl)URL.revokeObjectURL(recordUrl);setRecordUrl(URL.createObjectURL(new Blob(chunks,{type:rec.mimeType})));stream.getTracks().forEach(t=>t.stop());setRecording(false)};recorder.current=rec;rec.start();setRecording(true);timerRef.current=setTimeout(()=>rec.state==='recording'&&rec.stop(),30000);}catch(e){notify(e.message||'Microphone unavailable. Please use the text option.')}};
  const toggleLike=(id)=>setLiked(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);

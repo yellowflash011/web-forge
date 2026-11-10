@@ -1,5 +1,17 @@
 # Machine A status
 
+## Next.js App Router refactor — current checkpoint
+
+The root marketplace now has real pages under app/: discovery, dynamic public profiles, dynamic job workspaces, jobs, worker workspace, worker-profile editing, onboarding, account and saved workers. /profile/ redirects to /account/. The screen-switch component and hash navigation are removed, including the reference design's hash writes. Shared appearance and the existing quote/action/review workspace are preserved.
+
+A root marketplace provider retains identity, locality, filters, saved IDs and per-worker request drafts across route changes. Page-scoped resources cancel stale reads, refresh on focus, and poll job lists. Record IDs are checked before rendering; malformed URLs return 404. Signing out clears identity and pending request drafts, and job workspaces remount on identity changes. Backend authorization remains authoritative.
+
+The app now uses normal Next.js server deployment: npm run build, then npm start (or a Next.js host). output:export is removed because arbitrary profile/job IDs use dynamic routes. /design/ still prerenders, and npm run export:figma creates the standalone five-frame HTML from the current .next build rather than stale out/ files. Backend files, migrations and environment configuration were not changed.
+
+Verification: production build and all 29 existing local checks pass (23 contract/domain/PostgreSQL checks and six interactive quote/action/review journeys). A separate explicit demo server verified real profile/job links, browser back/forward, retained search/saved IDs/drafts, request creation, messages after refresh, worker creation/editing after refresh, denied signed-out job access, and 404 responses for malformed profile/job IDs. Desktop at 1440px and phone at 390px retained the design; no phone horizontal overflow was observed. Screenshots: tests/ui/evidence/app-router-desktop.png and app-router-mobile.png. These checks use local fixtures and do not resolve B5 hosted verification or missing cloud deployment.
+
+Machine B: pull main before continuing B5. The service contract and B-owned directories are unchanged; implementation screens now live in features/marketplace/*-page.jsx and app/ route entries. No further implementation batch is required for this route refactor.
+
 ## Quote, job action and review UI — current frontend batch
 
 Implemented on implementation/frontend after integration repair 4372a88. Backend files, database migrations and shared environment were not changed in this batch. Machine B continues live verification; no API contract changes are required.
